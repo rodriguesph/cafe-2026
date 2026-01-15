@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   BookOpen, 
   CalendarCheck, 
@@ -9,6 +9,7 @@ import {
   Lock, 
   FileText, 
   Star, 
+  ChevronRight, 
   Brain, 
   BarChart, 
   MonitorPlay,
@@ -22,6 +23,7 @@ import {
   List,
   Search,
   AlertTriangle,
+  Filter,
   PlayCircle,
   Clock,
   ExternalLink,
@@ -338,19 +340,59 @@ const DataService = {
 };
 
 const TIMELINES = {
-  geral: [
-    { date: '26/01/2026', title: 'Abertura & Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências: Impactos e oportunidades nas novas dinâmicas do mercado', type: 'presencial' },
-    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Momento assíncrono, o professor terá esse momento para fazer a parte assíncrona da sua trilha de formação', type: 'assincrono' },
-    { date: '28/01/2026', title: 'Momento Síncrono', desc: 'Momento síncrono, o professor irá participar de um meet com o palestrante da sua trilha de informação', type: 'sincrono' },
-    { date: '29/01/2026', title: 'Momento Presencial', desc: 'Momento presencial, workshoop de aplicação de sua trilha de informação', type: 'presencial' },
-    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED', type: 'pratica' },
-    { date: '02/02/2026', title: 'Talkshow Peer Teaching', desc: 'Talkshow: Experiências do Peer teaching / lançamento da segunda turma do peer', type: 'evento' },
-    { date: '03/02/2026', title: 'Capacitação Integrado', desc: 'Capacitação da área das experiencias Integrado / Treinamento de mídias com área de comunicação', type: 'treinamento' },
+  graduacao: [
+    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', type: 'presencial' },
+    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação escolhida.', type: 'assincrono' },
+    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
+    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
+    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
+    { date: '02/02/2026 - 19h15', title: 'Reunião de Professores', desc: 'Encontro com o DEA (Diretoria de Ensino e Aprendizagem).', type: 'reuniao' },
+    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
+    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
   ],
-  graduacao: [{ date: '26/01 - 14h', title: 'Reunião NDE', desc: 'Alinhamento semestral.' }],
-  colegio: [{ date: '26/01 - 08h', title: 'Pedagógico Colégio', desc: 'Planejamento BNCC.' }],
-  medicina_cm: [{ date: '27/01 - 09h', title: 'OSCE Training', desc: 'Padronização de avaliação.' }],
-  medicina_macapa: [{ date: '27/01 - 14h', title: 'Internato', desc: 'Gestão de preceptores.' }]
+  colegio: [
+    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', type: 'presencial' },
+    { date: '27/01/2026 - 09h00', title: 'Reunião de Planejamento', desc: 'Alinhamento com as coordenações.', type: 'reuniao' },
+    { date: '27/01/2026 - 14h00', title: 'Capacitação Pense+', desc: 'Treinamento específico.', type: 'treinamento' },
+    { date: '27/01/2026 - 14h00', title: 'Capacitação Bilíngue', desc: 'Para professores do Programa Bilíngue.', type: 'treinamento' },
+    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação.', type: 'assincrono' },
+    { date: '28/01/2026 - 09h00', title: 'Capacitação Poliedro', desc: 'Treinamento sistema Poliedro.', type: 'treinamento' },
+    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
+    { date: '29/01/2026 - 09h00', title: 'Neurodivergentes (Profs)', desc: 'Conscientização e estratégias de sala de aula.', type: 'presencial' },
+    { date: '29/01/2026 - 14h00', title: 'Neurodivergentes (Coords)', desc: 'Alinhamento de protocolos e gestão da inclusão.', type: 'reuniao' },
+    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
+    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
+    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
+    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+  ],
+  medicina_cm: [
+    { date: '26/01/2026 - 15h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
+    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento e Palestra Futurismo.', type: 'presencial' },
+    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação.', type: 'assincrono' },
+    { date: '28/01/2026 - 14h00', title: 'Troca de Experiências', desc: 'Intercâmbio CM x Macapá (1º e 2º semestres).', type: 'reuniao' },
+    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
+    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
+    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '31/01/2026 - 09h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
+    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
+    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
+    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+  ],
+  medicina_macapa: [
+    { date: '19/01/2026 - 18h45', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
+    { date: '20/01/2026 - 18h45', title: 'Rodada de Planejamento', desc: 'Planejamento de disciplinas com professores de Macapá.', type: 'reuniao' },
+    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento e Palestra Futurismo.', type: 'presencial' },
+    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação.', type: 'assincrono' },
+    { date: '28/01/2026 - 14h00', title: 'Troca de Experiências', desc: 'Intercâmbio CM x Macapá (1º e 2º semestres).', type: 'reuniao' },
+    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
+    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
+    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
+    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
+    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+  ]
 };
 
 // --- APP ---
@@ -358,7 +400,7 @@ const TIMELINES = {
 export default function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
-  const [timelineTab, setTimelineTab] = useState('geral');
+  const [timelineTab, setTimelineTab] = useState('graduacao');
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
@@ -414,10 +456,19 @@ export default function App() {
       evaluation_data: null,
       created_at: new Date().toISOString()
     };
+
+    // REGRA DE BYPASS PARA MEDICINA MACAPÁ
+    if (formData.unidade === 'Macapa' && formData.colegiado === 'Medicina') {
+      formData.track = TRACKS['MA'].name;
+      formData.track_code = 'MA';
+      formData.test_completed = true;
+    }
+
     try {
       const u = await DataService.register(formData);
       setUser(u); localStorage.setItem('CAFE_SESSION_ID', u.id);
-      setView('test');
+      // Se foi bypassado, vai direto pro dashboard, senão pro teste
+      setView(u.test_completed ? 'dashboard' : 'test');
     } catch(err) { alert(err.message); }
     setLoading(false);
   };
@@ -485,14 +536,14 @@ export default function App() {
               <div className="flex flex-wrap justify-center gap-2 mb-8">
                 {Object.keys(TIMELINES).map(k => (
                   <button key={k} onClick={() => setTimelineTab(k)} className={`px-4 py-2 rounded-full text-sm font-bold transition ${timelineTab === k ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'}`}>
-                    {k === 'geral' ? 'Geral' : k.replace('_', ' ').toUpperCase()}
+                    {k.replace('_', ' ').toUpperCase()}
                   </button>
                 ))}
               </div>
               <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 border border-gray-100">
                 {TIMELINES[timelineTab].map((item, idx) => (
                   <div key={idx} className="relative pl-8 pb-8 last:pb-0 border-l-2 border-blue-100">
-                    <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ${item.type === 'presencial' ? 'bg-blue-600' : 'bg-purple-500'}`} />
+                    <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ${item.type === 'presencial' ? 'bg-blue-600' : (item.type === 'reuniao' ? 'bg-yellow-500' : 'bg-purple-500')}`} />
                     <span className="text-xs font-bold text-blue-600 block mb-1">{item.date}</span>
                     <h3 className="text-lg font-bold">{item.title}</h3>
                     <p className="text-gray-600 text-sm">{item.desc}</p>
@@ -923,8 +974,9 @@ function Dashboard({ user, onUpdate, onCertificate }) {
                       <Clock size={20} className={timeLeft > 0 ? "text-blue-600 animate-pulse" : "text-green-600"}/>
                       <div>
                         <span className="text-xs font-bold text-gray-500 uppercase block">Tempo Restante</span>
+                        {/* TIMER OCULTO - Mas funcionando */}
                         <span className={`font-mono text-xl font-bold ${timeLeft > 0 ? 'text-blue-900' : 'text-green-600'}`}>
-                          {timeLeft > 0 ? formatTime(timeLeft) : "Concluído"}
+                          {timeLeft > 0 ? "Contabilizando..." : "Concluído"}
                         </span>
                       </div>
                     </div>

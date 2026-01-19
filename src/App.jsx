@@ -26,7 +26,7 @@ import {
   ExternalLink,
   Video,
   MapPin,
-  BarChart // Adicionado aqui
+  BarChart
 } from 'lucide-react';
 
 // --- IMPORTAÇÕES FIREBASE (SDK Modular) ---
@@ -288,7 +288,69 @@ const QUESTIONS = [
   }
 ];
 
-// --- TIMELINES (PROGRAMAÇÃO) ---
+// --- CAMADA DE DADOS ---
+const DataService = {
+  login: async (email, password) => {
+    if (USE_REAL_FIREBASE && dbReal) {
+      const q = query(collection(dbReal, "users"), where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) throw new Error("Usuário não encontrado.");
+      const userData = querySnapshot.docs[0].data();
+      if (userData.password !== password) throw new Error("Senha incorreta.");
+      return { ...userData, id: querySnapshot.docs[0].id };
+    }
+  },
+  register: async (userData) => {
+    const newId = Date.now().toString();
+    const userToSave = { ...userData, id: newId };
+    
+    // VALIDACAO CRITICA DE BANCO
+    if (!dbReal) {
+        throw new Error("Erro Crítico: Banco de dados não conectado. Verifique se as chaves da API estão corretas e se você tem internet.");
+    }
+
+    if (USE_REAL_FIREBASE && dbReal) {
+      const q = query(collection(dbReal, "users"), where("email", "==", userData.email));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) throw new Error("Email já cadastrado.");
+      await setDoc(doc(dbReal, "users", newId), userToSave);
+      return userToSave;
+    }
+    // Fallback se algo muito estranho acontecer
+    throw new Error("Erro desconhecido ao tentar registrar.");
+  },
+  updateUser: async (userId, updates) => {
+    if (USE_REAL_FIREBASE && dbReal) {
+      const userRef = doc(dbReal, "users", userId);
+      await updateDoc(userRef, updates);
+      const snap = await getDoc(userRef);
+      return { ...snap.data(), id: userId };
+    }
+  },
+  deleteUser: async (userId) => {
+    if (USE_REAL_FIREBASE && dbReal) {
+      await deleteDoc(doc(dbReal, "users", userId));
+    }
+  },
+  getSessionUser: async (sessionId) => {
+    if (USE_REAL_FIREBASE && dbReal) {
+      try {
+        const docRef = doc(dbReal, "users", sessionId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) return { ...docSnap.data(), id: sessionId };
+      } catch (e) { return null; }
+    }
+    return null;
+  },
+  getAllUsers: async () => {
+    if (USE_REAL_FIREBASE && dbReal) {
+      const querySnapshot = await getDocs(collection(dbReal, "users"));
+      return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    }
+    return [];
+  }
+};
+
 const TIMELINES = {
   graduacao: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
@@ -400,6 +462,7 @@ export default function App() {
     };
 
     // REGRA DE BYPASS PARA MEDICINA MACAPÁ
+    // Ajuste: A string no select agora é "Macapá" com acento
     if (formData.unidade === 'Macapá' && formData.colegiado === 'Medicina') {
       formData.track = TRACKS['MA'].name;
       formData.track_code = 'MA';
@@ -1087,7 +1150,7 @@ function CertificateView({ user, onBack }) {
   );
 }
 
-// --- ADMIN REFORMULADO COM MODAIS ---
+// --- ADMIN REFORMULADO (V5 - COM FILTROS DE VERDADE E AVALIAÇÃO DETALHADA) ---
 
 function AdminPanel({ onBack, onImpersonate }) {
   const [users, setUsers] = useState([]);
@@ -1334,8 +1397,8 @@ function AdminPanel({ onBack, onImpersonate }) {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Professor</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Dados Inst.</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Unidade/Colegiado</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Trilha</th>
                   <th className="px-6 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>

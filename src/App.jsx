@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BookOpen, 
   CalendarCheck, 
@@ -9,9 +9,7 @@ import {
   Lock, 
   FileText, 
   Star, 
-  ChevronRight, 
   Brain, 
-  BarChart, 
   MonitorPlay,
   Loader2,
   Download,
@@ -23,11 +21,12 @@ import {
   List,
   Search,
   AlertTriangle,
-  Filter,
   PlayCircle,
   Clock,
   ExternalLink,
-  Video
+  Video,
+  MapPin,
+  BarChart // Adicionado aqui
 } from 'lucide-react';
 
 // --- IMPORTAÇÕES FIREBASE (SDK Modular) ---
@@ -74,7 +73,7 @@ if (USE_REAL_FIREBASE) {
 
 // --- DADOS ESTRUTURAIS ---
 
-const COLEGIADOS_OPTIONS = [
+const AREA_OPTIONS = [ // Antigo Colegiado
   "Agrárias",
   "Arquitetura e Engenharias",
   "Colégio",
@@ -88,6 +87,11 @@ const COLEGIADOS_OPTIONS = [
   "Fundamental I",
   "Fundamental II",
   "Ensino Médio"
+];
+
+const UNIT_OPTIONS = [
+  "Campo Mourão",
+  "Macapá"
 ];
 
 const ATTENDANCE_PASSWORDS = {
@@ -284,114 +288,52 @@ const QUESTIONS = [
   }
 ];
 
-// --- CAMADA DE DADOS ---
-const DataService = {
-  login: async (email, password) => {
-    if (USE_REAL_FIREBASE && dbReal) {
-      const q = query(collection(dbReal, "users"), where("email", "==", email));
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) throw new Error("Usuário não encontrado.");
-      const userData = querySnapshot.docs[0].data();
-      if (userData.password !== password) throw new Error("Senha incorreta.");
-      return { ...userData, id: querySnapshot.docs[0].id };
-    }
-  },
-  register: async (userData) => {
-    const newId = Date.now().toString();
-    const userToSave = { ...userData, id: newId };
-    if (USE_REAL_FIREBASE && dbReal) {
-      const q = query(collection(dbReal, "users"), where("email", "==", userData.email));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) throw new Error("Email já cadastrado.");
-      await setDoc(doc(dbReal, "users", newId), userToSave);
-      return userToSave;
-    }
-  },
-  updateUser: async (userId, updates) => {
-    if (USE_REAL_FIREBASE && dbReal) {
-      const userRef = doc(dbReal, "users", userId);
-      await updateDoc(userRef, updates);
-      const snap = await getDoc(userRef);
-      return { ...snap.data(), id: userId };
-    }
-  },
-  deleteUser: async (userId) => {
-    if (USE_REAL_FIREBASE && dbReal) {
-      await deleteDoc(doc(dbReal, "users", userId));
-    }
-  },
-  getSessionUser: async (sessionId) => {
-    if (USE_REAL_FIREBASE && dbReal) {
-      try {
-        const docRef = doc(dbReal, "users", sessionId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) return { ...docSnap.data(), id: sessionId };
-      } catch (e) { return null; }
-    }
-    return null;
-  },
-  getAllUsers: async () => {
-    if (USE_REAL_FIREBASE && dbReal) {
-      const querySnapshot = await getDocs(collection(dbReal, "users"));
-      return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-    }
-    return [];
-  }
-};
-
+// --- TIMELINES (PROGRAMAÇÃO) ---
 const TIMELINES = {
   graduacao: [
-    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', type: 'presencial' },
-    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação escolhida.', type: 'assincrono' },
-    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
-    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
-    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
-    { date: '02/02/2026 - 19h15', title: 'Reunião de Professores', desc: 'Encontro com o DEA (Diretoria de Ensino e Aprendizagem).', type: 'reuniao' },
-    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
-    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
+    { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
+    { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
+    { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
+    { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '02/02/2026 (Segunda-Feira) - 19h15', title: 'Reunião Geral de Professores', desc: 'Lançamento da segunda turma do peer, informações sobre provas, informações sobre planejamento educacional. Reunião inicia as 19h00.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
+    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro do Centro', type: 'treinamento' },
   ],
   colegio: [
-    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', type: 'presencial' },
-    { date: '27/01/2026 - 09h00', title: 'Reunião de Planejamento', desc: 'Alinhamento com as coordenações.', type: 'reuniao' },
-    { date: '27/01/2026 - 14h00', title: 'Capacitação Pense+', desc: 'Treinamento específico.', type: 'treinamento' },
-    { date: '27/01/2026 - 14h00', title: 'Capacitação Bilíngue', desc: 'Para professores do Programa Bilíngue.', type: 'treinamento' },
-    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 - 09h00', title: 'Capacitação Poliedro', desc: 'Treinamento sistema Poliedro.', type: 'treinamento' },
-    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
-    { date: '29/01/2026 - 09h00', title: 'Neurodivergentes (Profs)', desc: 'Conscientização e estratégias de sala de aula.', type: 'presencial' },
-    { date: '29/01/2026 - 14h00', title: 'Neurodivergentes (Coords)', desc: 'Alinhamento de protocolos e gestão da inclusão.', type: 'reuniao' },
-    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
-    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
-    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
-    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
+    { date: '27/01/2026 (Terça-Feira) - 09h00', title: 'Reunião de Planejamento', desc: 'Reunião de alinhamento e planejamento com as coordenações.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '27/01/2026 (Terça-Feira) - 14h00', title: 'Capacitação Pense+', desc: 'Capacitação específica.', location: 'Sala D4 Eco Campus', type: 'treinamento' },
+    { date: '27/01/2026 (Terça-Feira) - 14h00', title: 'Capacitação Bilíngue', desc: 'Capacitação para professores do Programa Bilingue.', location: 'Sala D7 Eco Campus', type: 'treinamento' },
+    { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
+    { date: '28/01/2026 (Quarta-Feira) - 09h00', title: 'Capacitação Poliedro', desc: 'Treinamento sistema Poliedro.', type: 'treinamento' },
+    { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
+    { date: '29/01/2026 (Quinta-Feira) - 09h00', title: 'Neurodivergentes: Compreendendo e Incluindo no Contexto Escolar', desc: 'Conscientização, estratégias de sala de aula e identificação de sinais. (Para professores)', type: 'presencial' },
+    { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
+    { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
+    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   medicina_cm: [
-    { date: '26/01/2026 - 15h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
-    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento e Palestra Futurismo.', type: 'presencial' },
-    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 - 14h00', title: 'Troca de Experiências', desc: 'Intercâmbio CM x Macapá (1º e 2º semestres).', type: 'reuniao' },
-    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
-    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
-    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '31/01/2026 - 09h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
-    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
-    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
-    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
+    { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
+    { date: '27/01/2026 (Terça-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Lançamento da segunda turma do peer, informações sobre provas, informações sobre planejamento educacional. Reunião inicia as 19h00.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono no Campus Macapá', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
+    { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
+    { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '31/01/2026 (Sábado) - 09h00', title: 'Reunião Geral de Professores', desc: 'Lançamento da segunda turma do peer, informações sobre provas, informações sobre planejamento educacional.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
+    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   medicina_macapa: [
-    { date: '19/01/2026 - 18h45', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
-    { date: '20/01/2026 - 18h45', title: 'Rodada de Planejamento', desc: 'Planejamento de disciplinas com professores de Macapá.', type: 'reuniao' },
-    { date: '26/01/2026 - 19h00', title: 'Abertura & Palestra', desc: 'Abertura do evento e Palestra Futurismo.', type: 'presencial' },
-    { date: '27/01/2026', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 - 14h00', title: 'Troca de Experiências', desc: 'Intercâmbio CM x Macapá (1º e 2º semestres).', type: 'reuniao' },
-    { date: '28/01/2026 - 19h00', title: 'Momento Síncrono', desc: 'Meet com o palestrante da trilha.', type: 'sincrono' },
-    { date: '29/01/2026 - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', type: 'presencial' },
-    { date: '30/01/2026', title: 'Elaboração do PED', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '02/02/2026 - 19h00', title: 'Talkshow Peer Teaching', desc: 'Experiências e lançamento da 2ª turma.', type: 'evento' },
-    { date: '02/02/2026 - 20h15', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', type: 'evento' },
-    { date: '03/02/2026 - 14h00', title: 'Treinamento de Mídias', desc: 'Com área de comunicação.', type: 'treinamento' },
+    { date: '19/01/2026 (Segunda-Feira) - 18h45', title: 'Reunião Geral com Professores', desc: 'Reunião de professores com o DEA.', location: 'Síncrono', type: 'reuniao' },
+    { date: '20/01/2026 (Terça-Feira) - 18h45', title: 'Rodada de Planejamento', desc: 'Rodada de Planejamento de disciplinas com professores de Macapá.', location: 'Presencial no Campus Macapá', type: 'reuniao' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Presencial no Campus Macapá', type: 'presencial' },
+    { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono no Campus Macapá', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
+    { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
   ]
 };
 
@@ -458,7 +400,7 @@ export default function App() {
     };
 
     // REGRA DE BYPASS PARA MEDICINA MACAPÁ
-    if (formData.unidade === 'Macapa' && formData.colegiado === 'Medicina') {
+    if (formData.unidade === 'Macapá' && formData.colegiado === 'Medicina') {
       formData.track = TRACKS['MA'].name;
       formData.track_code = 'MA';
       formData.test_completed = true;
@@ -467,7 +409,6 @@ export default function App() {
     try {
       const u = await DataService.register(formData);
       setUser(u); localStorage.setItem('CAFE_SESSION_ID', u.id);
-      // Se foi bypassado, vai direto pro dashboard, senão pro teste
       setView(u.test_completed ? 'dashboard' : 'test');
     } catch(err) { alert(err.message); }
     setLoading(false);
@@ -524,9 +465,9 @@ export default function App() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">Objetivo do C.A.F.E.</h3>
+                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">Missão do C.A.F.E.</h3>
                   <p className="text-2xl md:text-4xl text-gray-800 font-bold leading-relaxed">
-                    "Nossa missão é fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
+                    "Fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
                   </p>
                 </div>
               </div>
@@ -546,7 +487,12 @@ export default function App() {
                     <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ${item.type === 'presencial' ? 'bg-blue-600' : (item.type === 'reuniao' ? 'bg-yellow-500' : 'bg-purple-500')}`} />
                     <span className="text-xs font-bold text-blue-600 block mb-1">{item.date}</span>
                     <h3 className="text-lg font-bold">{item.title}</h3>
-                    <p className="text-gray-600 text-sm">{item.desc}</p>
+                    <p className="text-gray-600 text-sm mb-1">{item.desc}</p>
+                    {item.location && (
+                      <div className="flex items-center text-xs font-semibold text-gray-500 mt-2 bg-gray-50 p-2 rounded w-fit">
+                        <MapPin size={14} className="mr-1 text-gray-400"/> {item.location}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -570,14 +516,12 @@ export default function App() {
                 <input name="email" type="email" placeholder="Email Institucional" required className="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-green-500" />
                 <div className="grid grid-cols-2 gap-4">
                   <select name="colegiado" required className="px-4 py-3 border rounded-lg bg-white text-sm">
-                    <option value="">Colegiado</option>
-                    {COLEGIADOS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                    <option value="">Área</option>
+                    {AREA_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <select name="unidade" required className="px-4 py-3 border rounded-lg bg-white text-sm">
                     <option value="">Unidade</option>
-                    <option value="CM_Centro">CM Centro</option>
-                    <option value="CM_Campus">CM Campus</option>
-                    <option value="Macapa">Macapá</option>
+                    {UNIT_OPTIONS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
                 </div>
                 <input name="password" type="password" placeholder="Crie uma Senha" required className="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-green-500" />
@@ -974,7 +918,6 @@ function Dashboard({ user, onUpdate, onCertificate }) {
                       <Clock size={20} className={timeLeft > 0 ? "text-blue-600 animate-pulse" : "text-green-600"}/>
                       <div>
                         <span className="text-xs font-bold text-gray-500 uppercase block">Tempo Restante</span>
-                        {/* TIMER OCULTO - Mas funcionando */}
                         <span className={`font-mono text-xl font-bold ${timeLeft > 0 ? 'text-blue-900' : 'text-green-600'}`}>
                           {timeLeft > 0 ? "Contabilizando..." : "Concluído"}
                         </span>
@@ -1144,19 +1087,19 @@ function CertificateView({ user, onBack }) {
   );
 }
 
-// --- ADMIN REFORMULADO (V5 - COM FILTROS DE VERDADE E AVALIAÇÃO DETALHADA) ---
+// --- ADMIN REFORMULADO COM MODAIS ---
 
 function AdminPanel({ onBack, onImpersonate }) {
   const [users, setUsers] = useState([]);
   const [viewMode, setViewMode] = useState('list');
   const [search, setSearch] = useState('');
   
+  // States para Modais
+  const [modal, setModal] = useState({ type: null, user: null, value: '' });
+
   // FILTERS
   const [filterUnit, setFilterUnit] = useState('Todas');
   const [filterColegiado, setFilterColegiado] = useState('Todos');
-
-  // MODAL ACTIONS
-  const [modal, setModal] = useState({ type: null, user: null, value: '' });
 
   useEffect(() => {
     loadUsers();
@@ -1167,14 +1110,14 @@ function AdminPanel({ onBack, onImpersonate }) {
     setUsers(list);
   };
 
-  // FILTER LOGIC
-  const filteredUsers = users.filter(u => {
-    const matchesSearch = (u.name || '').toLowerCase().includes(search.toLowerCase()) || 
-                          (u.email || '').toLowerCase().includes(search.toLowerCase());
-    const matchesUnit = filterUnit === 'Todas' || u.unidade === filterUnit;
-    const matchesColegiado = filterColegiado === 'Todos' || u.colegiado === filterColegiado;
-    return matchesSearch && matchesUnit && matchesColegiado;
-  });
+    // FILTER LOGIC
+    const filteredUsers = users.filter(u => {
+      const matchesSearch = (u.name || '').toLowerCase().includes(search.toLowerCase()) || 
+                            (u.email || '').toLowerCase().includes(search.toLowerCase());
+      const matchesUnit = filterUnit === 'Todas' || u.unidade === filterUnit;
+      const matchesColegiado = filterColegiado === 'Todos' || u.colegiado === filterColegiado;
+      return matchesSearch && matchesUnit && matchesColegiado;
+    });
 
   const confirmAction = async () => {
     const { type, user, value } = modal;
@@ -1193,16 +1136,17 @@ function AdminPanel({ onBack, onImpersonate }) {
       } 
       else if (type === 'impersonate') {
         onImpersonate(user);
-        return;
+        return; // Não fecha o modal, pois o app muda de tela
       }
       setModal({ type: null, user: null, value: '' });
     } catch (error) {
-      alert("Erro: " + error.message);
+      alert("Erro na operação: " + error.message);
     }
   };
 
   const downloadCSV = () => {
-    // Agora inclui as notas de cada dia separadas
+    // 1. Adicionar BOM para Excel (\uFEFF)
+    // 2. Usar Ponto e Vírgula (;) como separador
     let csv = "\uFEFFNome;Email;Unidade;Colegiado;Trilha;PED Link;NPS (Geral);Nota 26;Nota 27;Nota 28;Nota 29;Comentarios\n";
     
     users.forEach(u => {
@@ -1219,19 +1163,18 @@ function AdminPanel({ onBack, onImpersonate }) {
         e.day_27 || '-',
         e.day_28 || '-',
         e.day_29 || '-',
-        `"${(e.comments || '').replace(/\n/g, ' ').replace(/"/g, '""')}"`
-      ].join(';');
+        `"${(e.comments || '').replace(/\n/g, ' ').replace(/"/g, '""')}"` // Escape quotes
+      ].join(';'); // Separador ;
       csv += line + "\n";
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "cafe_relatorio_detalhado.csv";
+    link.download = "cafe_relatorio_completo.csv";
     link.click();
   };
 
-  // CALCULO DE ESTATÍSTICAS (Baseado nos usuários filtrados para ser dinâmico)
   const stats = useMemo(() => {
     const total = filteredUsers.length;
     const pedSubmitted = filteredUsers.filter(u => u.ped_submitted).length;
@@ -1270,19 +1213,25 @@ function AdminPanel({ onBack, onImpersonate }) {
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen bg-gray-100">
       
-      {/* HEADER & FILTERS */}
+      {/* HEADER */}
       <div className="bg-white p-6 rounded-xl shadow-sm mb-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2"><Lock className="text-blue-900"/> Admin Console</h1>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <Lock className="text-blue-900"/> Admin Console
+          </h1>
           <div className="flex gap-2">
-            <button onClick={() => setViewMode('list')} className={`px-4 py-2 rounded font-bold flex items-center gap-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}><List size={18}/> Lista</button>
-            <button onClick={() => setViewMode('stats')} className={`px-4 py-2 rounded font-bold flex items-center gap-2 ${viewMode === 'stats' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}><LayoutDashboard size={18}/> Dashboard</button>
+            <button onClick={() => setViewMode('list')} className={`px-4 py-2 rounded font-bold flex items-center gap-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+              <List size={18}/> Lista
+            </button>
+            <button onClick={() => setViewMode('stats')} className={`px-4 py-2 rounded font-bold flex items-center gap-2 ${viewMode === 'stats' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+              <LayoutDashboard size={18}/> Dashboard
+            </button>
             <button onClick={onBack} className="px-4 py-2 text-red-600 font-bold hover:bg-red-50 rounded ml-4">Sair</button>
           </div>
         </div>
 
-        {/* BARRA DE FILTROS GLOBAIS */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      {/* BARRA DE FILTROS GLOBAIS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase">Buscar</label>
             <div className="relative">
@@ -1385,8 +1334,8 @@ function AdminPanel({ onBack, onImpersonate }) {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Professor</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Unidade/Colegiado</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Trilha</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Dados Inst.</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
@@ -1405,6 +1354,7 @@ function AdminPanel({ onBack, onImpersonate }) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{u.colegiado}</div>
                       <div className="text-xs text-gray-500">{u.unidade}</div>
+                      {u.semipresencial && <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">EAD/Semi</span>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${u.track ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{u.track || 'Pendente'}</span>
@@ -1421,9 +1371,6 @@ function AdminPanel({ onBack, onImpersonate }) {
                 ))}
               </tbody>
             </table>
-          </div>
-          <div className="p-4 border-t bg-gray-50 text-xs text-gray-500 text-center">
-            Exibindo {filteredUsers.length} de {users.length} registros.
           </div>
         </div>
       )}

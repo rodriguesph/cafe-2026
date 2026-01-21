@@ -354,13 +354,12 @@ const DataService = {
 const TIMELINES = {
   graduacao: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
-    { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
+    { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'Estudo individual na trilha de formação escolhida.', type: 'assincrono' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '02/02/2026 (Segunda-Feira) - 19h15', title: 'Reunião Geral de Professores', desc: 'Lançamento da segunda turma do peer, informações sobre provas, informações sobre planejamento educacional. Reunião inicia as 19h00.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
-    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro do Centro', type: 'treinamento' },
+    { date: '02/02/2026 (Segunda-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   colegio: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
@@ -373,27 +372,27 @@ const TIMELINES = {
     { date: '29/01/2026 (Quinta-Feira) - 09h00', title: 'Neurodivergentes: Compreendendo e Incluindo no Contexto Escolar', desc: 'Conscientização, estratégias de sala de aula e identificação de sinais. (Para professores)', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
-    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   medicina_cm: [
-    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
+    { date: '26/01/2026 (Segunda-Feira) - 15h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento e Palestra Futurismo.', location: 'Anfiteatro Eco Campus', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
-    { date: '27/01/2026 (Terça-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Lançamento da segunda turma do peer, informações sobre provas, informações sobre planejamento educacional. Reunião inicia as 19h00.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '27/01/2026 (Terça-Feira) - 19h00', title: 'ENAMED 2026: Dados, Mentoria e Resultado', desc: 'O Professor como Protagonista.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono no Campus Macapá', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
+    { date: '29/01/2026 (Quinta-Feira) - 14h00', title: 'Workshop Presencial', desc: 'Elaboração de questões.', location: 'Sala D7 na unidade Campus', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
+    { date: '30/01/2026 (Sexta-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '31/01/2026 (Sábado) - 09h00', title: 'Reunião Geral de Professores', desc: 'Lançamento da segunda turma do peer, informações sobre provas, informações sobre planejamento educacional.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
-    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   medicina_macapa: [
     { date: '19/01/2026 (Segunda-Feira) - 18h45', title: 'Reunião Geral com Professores', desc: 'Reunião de professores com o DEA.', location: 'Síncrono', type: 'reuniao' },
     { date: '20/01/2026 (Terça-Feira) - 18h45', title: 'Rodada de Planejamento', desc: 'Rodada de Planejamento de disciplinas com professores de Macapá.', location: 'Presencial no Campus Macapá', type: 'reuniao' },
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Presencial no Campus Macapá', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono no Campus Macapá', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
   ]
@@ -462,7 +461,6 @@ export default function App() {
     };
 
     // REGRA DE BYPASS PARA MEDICINA MACAPÁ
-    // Ajuste: A string no select agora é "Macapá" com acento
     if (formData.unidade === 'Macapá' && formData.colegiado === 'Medicina') {
       formData.track = TRACKS['MA'].name;
       formData.track_code = 'MA';
@@ -528,9 +526,9 @@ export default function App() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">Missão do C.A.F.E.</h3>
+                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">Objetivo do C.A.F.E.</h3>
                   <p className="text-2xl md:text-4xl text-gray-800 font-bold leading-relaxed">
-                    "Fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
+                    "Nossa missão é fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
                   </p>
                 </div>
               </div>
@@ -1150,7 +1148,7 @@ function CertificateView({ user, onBack }) {
   );
 }
 
-// --- ADMIN REFORMULADO (V5 - COM FILTROS DE VERDADE E AVALIAÇÃO DETALHADA) ---
+// --- ADMIN REFORMULADO (V7.3 - FIX & FEATURES) ---
 
 function AdminPanel({ onBack, onImpersonate }) {
   const [users, setUsers] = useState([]);
@@ -1312,10 +1310,10 @@ function AdminPanel({ onBack, onImpersonate }) {
             </select>
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Colegiado</label>
+            <label className="text-xs font-bold text-gray-500 uppercase">Área</label>
             <select className="w-full border rounded-lg py-2 px-3 text-sm" value={filterColegiado} onChange={e => setFilterColegiado(e.target.value)}>
-              <option value="Todos">Todos os Colegiados</option>
-              {COLEGIADOS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+              <option value="Todos">Todas as Áreas</option>
+              {AREA_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <button onClick={downloadCSV} className="bg-green-600 text-white py-2 px-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-green-700 h-10"><Download size={16}/> Exportar CSV</button>
@@ -1380,7 +1378,7 @@ function AdminPanel({ onBack, onImpersonate }) {
                     <span className="font-bold text-gray-900">{val}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{width: `${(val/stats.total)*100}%`}}></div>
+                    <div className="bg-blue-600 h-2 rounded-full" style={{width: `${(val/(stats.total || 1))*100}%`}}></div>
                   </div>
                 </div>
               ))}
@@ -1397,7 +1395,7 @@ function AdminPanel({ onBack, onImpersonate }) {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Professor</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Unidade/Colegiado</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Unidade/Área</th>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Trilha</th>
                   <th className="px-6 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Ações</th>
                 </tr>

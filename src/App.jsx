@@ -359,7 +359,8 @@ const TIMELINES = {
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
     { date: '02/02/2026 (Segunda-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
+    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro do Centro', type: 'treinamento' },
   ],
   colegio: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
@@ -372,7 +373,8 @@ const TIMELINES = {
     { date: '29/01/2026 (Quinta-Feira) - 09h00', title: 'Neurodivergentes: Compreendendo e Incluindo no Contexto Escolar', desc: 'Conscientização, estratégias de sala de aula e identificação de sinais. (Para professores)', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
+    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   medicina_cm: [
     { date: '26/01/2026 (Segunda-Feira) - 15h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
@@ -384,8 +386,8 @@ const TIMELINES = {
     { date: '29/01/2026 (Quinta-Feira) - 14h00', title: 'Workshop Presencial', desc: 'Elaboração de questões.', location: 'Sala D7 na unidade Campus', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
+    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
   ],
   medicina_macapa: [
     { date: '19/01/2026 (Segunda-Feira) - 18h45', title: 'Reunião Geral com Professores', desc: 'Reunião de professores com o DEA.', location: 'Síncrono', type: 'reuniao' },
@@ -1167,8 +1169,14 @@ function AdminPanel({ onBack, onImpersonate }) {
   }, []);
 
   const loadUsers = async () => {
-    const list = await DataService.getAllUsers();
-    setUsers(list);
+    try {
+      const list = await DataService.getAllUsers();
+      // FILTRO DE SEGURANÇA: Remove usuários com dados corrompidos para não quebrar a tela
+      const validList = list.filter(u => u && u.id); 
+      setUsers(validList);
+    } catch (e) {
+      console.error("Erro ao carregar usuários:", e);
+    }
   };
 
     // FILTER LOGIC

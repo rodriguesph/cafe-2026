@@ -73,7 +73,7 @@ if (USE_REAL_FIREBASE) {
 
 // --- DADOS ESTRUTURAIS ---
 
-const AREA_OPTIONS = [ // Antigo Colegiado
+const AREA_OPTIONS = [
   "Agrárias",
   "Arquitetura e Engenharias",
   "Colégio",
@@ -359,8 +359,7 @@ const TIMELINES = {
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
     { date: '02/02/2026 (Segunda-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
-    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro do Centro', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro do Centro', type: 'treinamento' },
   ],
   colegio: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
@@ -368,35 +367,34 @@ const TIMELINES = {
     { date: '27/01/2026 (Terça-Feira) - 14h00', title: 'Capacitação Pense+', desc: 'Capacitação específica.', location: 'Sala D4 Eco Campus', type: 'treinamento' },
     { date: '27/01/2026 (Terça-Feira) - 14h00', title: 'Capacitação Bilíngue', desc: 'Capacitação para professores do Programa Bilingue.', location: 'Sala D7 Eco Campus', type: 'treinamento' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 (Quarta-Feira) - 09h00', title: 'Capacitação Poliedro', desc: 'Treinamento sistema Poliedro.', type: 'treinamento' },
+    { date: '28/01/2026 (Quarta-Feira) - 07h30', title: 'Turma 01 - Capacitação Poliedro (Educação Infantil e Fundamental I)', desc: 'Treinamento sistema Poliedro.', location: 'Sala D4 - Eco Campus', type: 'treinamento' },
+    { date: '28/01/2026 (Quarta-Feira) - 07h30', title: 'Turma 01 - Reunião de professores (Fundamental II e Ensino Médio)', desc: 'Compartilhamento de informações com o setor de experiências.', location: 'Sala D7 - Eco Campus', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 10h00', title: 'Turma 02 - Capacitação Poliedro (Fundamental II e Ensino Médio)', desc: 'Treinamento sistema Poliedro.', location: 'Sala D4 - Eco Campus', type: 'treinamento' },
+    { date: '28/01/2026 (Quarta-Feira) - 10h00', title: 'Turma 02 - Reunião de professores (Educação Infantil e Fundamental I)', desc: 'Compartilhamento de informações com o setor de experiências.', location: 'Sala D7 - Eco Campus', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
-    { date: '29/01/2026 (Quinta-Feira) - 09h00', title: 'Neurodivergentes: Compreendendo e Incluindo no Contexto Escolar', desc: 'Conscientização, estratégias de sala de aula e identificação de sinais. (Para professores)', type: 'presencial' },
+    { date: '29/01/2026 (Quinta-Feira) - 09h00', title: 'Neurodivergentes: Compreendendo e Incluindo no Contexto Escolar', desc: 'Conscientização, estratégias de sala de aula e identificação de sinais. (Para professores)', location: 'Anfiteatro - Eco Campus', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
-    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
-    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Eco Campus', type: 'treinamento' },
   ],
   medicina_cm: [
     { date: '26/01/2026 (Segunda-Feira) - 15h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento e Palestra Futurismo.', location: 'Anfiteatro Eco Campus', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
     { date: '27/01/2026 (Terça-Feira) - 19h00', title: 'ENAMED 2026: Dados, Mentoria e Resultado', desc: 'O Professor como Protagonista.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono no Campus Macapá', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Encontro Síncrono', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
-    { date: '29/01/2026 (Quinta-Feira) - 14h00', title: 'Workshop Presencial', desc: 'Elaboração de questões.', location: 'Sala D7 na unidade Campus', type: 'presencial' },
-    { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
-    { date: '30/01/2026 (Sexta-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '03/02/2026 (Terça-Feira) - 19h30', title: 'Experiência Integrado', desc: 'Capacitação da área das experiências Integrado.', location: 'Anfiteatro Eco Campus', type: 'evento' },
-    { date: '03/02/2026 (Terça-Feira) - 14h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Campus', type: 'treinamento' },
+    { date: '29/01/2026 (Quinta-Feira) - 14h00', title: 'Workshop Presencial: Avaliação', desc: 'Elaboração de questões.', location: 'Sala D7 - Eco Campus', type: 'presencial' },
+    { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial: Temas da trilha', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
+    { date: '30/01/2026 (Sexta-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Com o CEO, Diretores e Coordenação.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Eco Campus', type: 'treinamento' },
   ],
   medicina_macapa: [
-    { date: '19/01/2026 (Segunda-Feira) - 18h45', title: 'Reunião Geral com Professores', desc: 'Reunião de professores com o DEA.', location: 'Síncrono', type: 'reuniao' },
-    { date: '20/01/2026 (Terça-Feira) - 18h45', title: 'Rodada de Planejamento', desc: 'Rodada de Planejamento de disciplinas com professores de Macapá.', location: 'Presencial no Campus Macapá', type: 'reuniao' },
-    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Presencial no Campus Macapá', type: 'presencial' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Presencial no Campus de Macapá', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá dos professores do primeiro e segundo semestre.', location: 'Síncrono', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Encontro Síncrono', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
-    { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
+    { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Presencial no Campus de Macapá', type: 'presencial' },
   ]
 };
 
@@ -522,15 +520,15 @@ export default function App() {
             <div className="py-16 bg-white text-center">
               <div className="max-w-4xl mx-auto px-4 font-serif italic text-gray-700">
                 <div className="mb-12">
-                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">Nosso sonho grande</h3>
-                  <p className="text-lg md:text-2xl text-gray-600 leading-relaxed">
+                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-2">Nosso sonho grande</h3>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed">
                     "Em cada cidade onde o integrado estiver presente, nosso ecossistema de ensino, saúde e extensão será reconhecido como a principal referência em qualidade e acessibilidade."
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">Objetivo do C.A.F.E.</h3>
-                  <p className="text-2xl md:text-4xl text-gray-800 font-bold leading-relaxed">
-                    "Nossa missão é fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
+                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-2">Missão do C.A.F.E.</h3>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed">
+                    "Fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
                   </p>
                 </div>
               </div>

@@ -359,7 +359,7 @@ const TIMELINES = {
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
     { date: '30/01/2026 (Sexta-Feira)', title: 'Elaboração do Planejamento Educacional Docente (PED)', desc: 'Início da elaboração do PED.', type: 'pratica' },
     { date: '02/02/2026 (Segunda-Feira) - 19h00', title: 'Reunião Geral de Professores', desc: 'Informações para o bom andamento do semestre.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro do Centro', type: 'treinamento' },
+    { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Eco Campus', type: 'treinamento' },
   ],
   colegio: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
@@ -378,11 +378,10 @@ const TIMELINES = {
     { date: '03/02/2026 (Terça-Feira) - 19h00', title: 'Capacitação para entrevistas em mídias', desc: 'Treinamento com área de comunicação.', location: 'Anfiteatro Eco Campus', type: 'treinamento' },
   ],
   medicina_cm: [
-    { date: '26/01/2026 (Segunda-Feira) - 15h00', title: 'Reunião de Professores', desc: 'Encontro com o DEA.', type: 'reuniao' },
-    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento e Palestra Futurismo.', location: 'Anfiteatro Eco Campus', type: 'presencial' },
+    { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
     { date: '27/01/2026 (Terça-Feira) - 19h00', title: 'ENAMED 2026: Dados, Mentoria e Resultado', desc: 'O Professor como Protagonista.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Encontro Síncrono', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Síncrono', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
     { date: '29/01/2026 (Quinta-Feira) - 14h00', title: 'Workshop Presencial: Avaliação', desc: 'Elaboração de questões.', location: 'Sala D7 - Eco Campus', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial: Temas da trilha', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
@@ -1148,7 +1147,7 @@ function CertificateView({ user, onBack }) {
   );
 }
 
-// --- ADMIN REFORMULADO (V7.3 - FIX & FEATURES) ---
+// --- ADMIN REFORMULADO (V5 - COM FILTROS DE VERDADE E AVALIAÇÃO DETALHADA) ---
 
 function AdminPanel({ onBack, onImpersonate }) {
   const [users, setUsers] = useState([]);

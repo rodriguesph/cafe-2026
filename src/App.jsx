@@ -26,7 +26,10 @@ import {
   ExternalLink,
   Video,
   MapPin,
-  BarChart
+  BarChart,
+  Library,
+  ArrowLeft,
+  ChevronRight // Essencial para o botão da Biblioteca
 } from 'lucide-react';
 
 // --- IMPORTAÇÕES FIREBASE (SDK Modular) ---
@@ -88,6 +91,8 @@ const AREA_OPTIONS = [
   "Fundamental II",
   "Ensino Médio"
 ];
+// SEGURANÇA: Mantém a variável antiga para evitar erros de cache/referência no Admin
+const COLEGIADOS_OPTIONS = AREA_OPTIONS;
 
 const UNIT_OPTIONS = [
   "Campo Mourão",
@@ -304,10 +309,7 @@ const DataService = {
     const newId = Date.now().toString();
     const userToSave = { ...userData, id: newId };
     
-    // VALIDACAO CRITICA DE BANCO
-    if (!dbReal) {
-        throw new Error("Erro Crítico: Banco de dados não conectado. Verifique se as chaves da API estão corretas e se você tem internet.");
-    }
+    if (!dbReal) throw new Error("Erro Crítico: Banco de dados não conectado.");
 
     if (USE_REAL_FIREBASE && dbReal) {
       const q = query(collection(dbReal, "users"), where("email", "==", userData.email));
@@ -316,7 +318,6 @@ const DataService = {
       await setDoc(doc(dbReal, "users", newId), userToSave);
       return userToSave;
     }
-    // Fallback se algo muito estranho acontecer
     throw new Error("Erro desconhecido ao tentar registrar.");
   },
   updateUser: async (userId, updates) => {
@@ -381,7 +382,7 @@ const TIMELINES = {
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Anfiteatro Eco Campus', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
     { date: '27/01/2026 (Terça-Feira) - 19h00', title: 'ENAMED 2026: Dados, Mentoria e Resultado', desc: 'O Professor como Protagonista.', location: 'Anfiteatro Eco Campus', type: 'reuniao' },
-    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Síncrono', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Encontro Síncrono', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
     { date: '29/01/2026 (Quinta-Feira) - 14h00', title: 'Workshop Presencial: Avaliação', desc: 'Elaboração de questões.', location: 'Sala D7 - Eco Campus', type: 'presencial' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial: Temas da trilha', desc: 'Aplicação prática da trilha.', location: 'Eco Campus', type: 'presencial' },
@@ -391,7 +392,7 @@ const TIMELINES = {
   medicina_macapa: [
     { date: '26/01/2026 (Segunda-Feira) - 19h00', title: 'Abertura e Palestra', desc: 'Abertura do evento, Recepção institucional, Palestra: Futurismo & Megatendências', location: 'Presencial no Campus de Macapá', type: 'presencial' },
     { date: '27/01/2026 (Terça-Feira)', title: 'Momento Assíncrono', desc: 'O professor terá esse momento para fazer a parte assíncrona da sua trilha de formação.', type: 'assincrono' },
-    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Encontro Síncrono', type: 'reuniao' },
+    { date: '28/01/2026 (Quarta-Feira) - 14h00', title: 'Troca de Experiências', desc: 'Trocas entre professores da medicina de Campo Mourão com Macapá (professores do primeiro e segundo semestre).', location: 'Síncrono', type: 'reuniao' },
     { date: '28/01/2026 (Quarta-Feira) - 19h00', title: 'Momento Síncrono', desc: 'Encontro ao vivo com palestrante via Google Meet.', type: 'sincrono' },
     { date: '29/01/2026 (Quinta-Feira) - 19h00', title: 'Workshop Presencial', desc: 'Aplicação prática da trilha.', location: 'Presencial no Campus de Macapá', type: 'presencial' },
   ]
@@ -404,6 +405,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [timelineTab, setTimelineTab] = useState('graduacao');
   const [loading, setLoading] = useState(false);
+  const [dashboardMode, setDashboardMode] = useState('main'); // 'main' or 'library'
   
   useEffect(() => {
     const init = async () => {
@@ -422,6 +424,7 @@ export default function App() {
     setUser(targetUser);
     localStorage.setItem('CAFE_SESSION_ID', targetUser.id);
     setView(targetUser.test_completed ? 'dashboard' : 'test');
+    setDashboardMode('main');
   };
 
   const handleLogin = async (e) => {
@@ -434,6 +437,7 @@ export default function App() {
       const u = await DataService.login(e.target.email.value, e.target.password.value);
       setUser(u); localStorage.setItem('CAFE_SESSION_ID', u.id);
       setView(u.test_completed ? 'dashboard' : 'test');
+      setDashboardMode('main');
     } catch(err) { alert(err.message); }
     setLoading(false);
   };
@@ -470,6 +474,7 @@ export default function App() {
       const u = await DataService.register(formData);
       setUser(u); localStorage.setItem('CAFE_SESSION_ID', u.id);
       setView(u.test_completed ? 'dashboard' : 'test');
+      setDashboardMode('main');
     } catch(err) { alert(err.message); }
     setLoading(false);
   };
@@ -519,13 +524,13 @@ export default function App() {
             <div className="py-16 bg-white text-center">
               <div className="max-w-4xl mx-auto px-4 font-serif italic text-gray-700">
                 <div className="mb-12">
-                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-2">Nosso sonho grande</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Nosso sonho grande</h3>
                   <p className="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed">
                     "Em cada cidade onde o integrado estiver presente, nosso ecossistema de ensino, saúde e extensão será reconhecido como a principal referência em qualidade e acessibilidade."
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-2">Missão do C.A.F.E.</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Missão do C.A.F.E.</h3>
                   <p className="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed">
                     "Fazer com que o professor se sinta protagonista desse projeto e ajude o estudante a construir sua biografia."
                   </p>
@@ -577,11 +582,12 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-4">
                   <select name="colegiado" required className="px-4 py-3 border rounded-lg bg-white text-sm">
                     <option value="">Área</option>
-                    {AREA_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                    {/* PROTEÇÃO: Caso AREA_OPTIONS falhe, renderiza lista vazia */}
+                    {(AREA_OPTIONS || []).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <select name="unidade" required className="px-4 py-3 border rounded-lg bg-white text-sm">
                     <option value="">Unidade</option>
-                    {UNIT_OPTIONS.map(u => <option key={u} value={u}>{u}</option>)}
+                    {(UNIT_OPTIONS || []).map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
                 </div>
                 <input name="password" type="password" placeholder="Crie uma Senha" required className="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-green-500" />
@@ -592,7 +598,11 @@ export default function App() {
         )}
 
         {view === 'test' && <LevelingTest user={user} onComplete={updateUser} onFinish={() => setView('dashboard')} />}
-        {view === 'dashboard' && user && <Dashboard user={user} onUpdate={updateUser} onCertificate={() => setView('certificate')} />}
+        {view === 'dashboard' && user && (
+          dashboardMode === 'library' 
+            ? <TrackLibrary onBack={() => setDashboardMode('main')} />
+            : <Dashboard user={user} onUpdate={updateUser} onCertificate={() => setView('certificate')} onOpenLibrary={() => setDashboardMode('library')} />
+        )}
       </main>
     </div>
   );
@@ -708,12 +718,108 @@ function LevelingTest({ user, onComplete, onFinish }) {
   );
 }
 
-function Dashboard({ user, onUpdate, onCertificate }) {
+function TrackLibrary({ onBack }) {
+  const [selectedTrack, setSelectedTrack] = useState(null);
+
+  if (selectedTrack) {
+    const track = TRACKS[selectedTrack];
+    return (
+      <div className="max-w-7xl mx-auto py-8 px-4 animate-in fade-in zoom-in duration-300">
+        <button onClick={() => setSelectedTrack(null)} className="mb-6 flex items-center gap-2 text-gray-600 hover:text-blue-600 font-bold transition">
+          <ArrowLeft size={20}/> Voltar para Biblioteca
+        </button>
+        
+        <div className="bg-white p-6 rounded-xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6 border-b pb-4">
+             <div className="bg-blue-100 p-3 rounded-lg text-blue-700">
+               {/* FIX DE RENDERIZAÇÃO */}
+               {(() => {
+                 const IconComponent = track.icon;
+                 return <IconComponent size={32} />;
+               })()}
+             </div>
+             <div>
+               <h1 className="text-2xl font-bold text-gray-900">{track.name}</h1>
+               <p className="text-gray-500">Material de Consulta</p>
+             </div>
+          </div>
+
+          <div style={{
+            position: 'relative', 
+            width: '100%', 
+            height: 0, 
+            paddingTop: '56.25%', 
+            paddingBottom: 0, 
+            boxShadow: '0 2px 8px 0 rgba(63,69,81,0.16)', 
+            marginTop: '1.6em', 
+            marginBottom: '0.9em', 
+            overflow: 'hidden', 
+            borderRadius: '8px', 
+            willChange: 'transform'
+          }}>
+            <iframe 
+              loading="lazy" 
+              style={{position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, border: 'none', padding: 0, margin: 0}}
+              src={track.embedUrl} 
+              allowFullScreen
+            ></iframe>
+          </div>
+          
+          <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+              <a href={track.linkUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-blue-600">
+                <ExternalLink size={14}/> Abrir no Canva
+              </a>
+              <span>Autor: {track.author}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto py-8 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <Library className="text-purple-600"/> Biblioteca de Trilhas
+          </h1>
+          <p className="text-gray-500">Explore conteúdos de outras áreas para expandir seu conhecimento.</p>
+        </div>
+        <button onClick={onBack} className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-bold transition flex items-center gap-2">
+          <LogOut size={18}/> Voltar para meu Painel
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        {Object.values(TRACKS).map(track => (
+          <div key={track.id} className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition cursor-pointer group border border-transparent hover:border-purple-200" onClick={() => setSelectedTrack(track.id)}>
+            <div className="flex items-start justify-between mb-4">
+              <div className="bg-purple-50 p-3 rounded-lg group-hover:bg-purple-100 transition">
+                {/* FIX DE RENDERIZAÇÃO */}
+                {(() => {
+                   const IconComponent = track.icon;
+                   return <IconComponent size={32} className="text-purple-600"/>;
+                })()}
+              </div>
+              <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">CONSULTA</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-700 transition">{track.name}</h3>
+            <p className="text-gray-600 text-sm mb-4">{track.desc}</p>
+            <div className="text-purple-600 font-bold text-sm flex items-center gap-1">
+              Acessar Conteúdo <ChevronRight size={16}/>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ user, onUpdate, onCertificate, onOpenLibrary }) {
   const ATTENDANCE_DATES = ['26/01', '28/01', '29/01'];
   
-  // Timer & Track State
+  // Timer REMOVIDO, apenas controle de checked
   const [trackStarted, setTrackStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const [contentChecked, setContentChecked] = useState(false);
   
   // Evaluation State
@@ -729,24 +835,6 @@ function Dashboard({ user, onUpdate, onCertificate }) {
   // Modal State
   const [attendanceModal, setAttendanceModal] = useState({ isOpen: false, date: null });
   const [passwordInput, setPasswordInput] = useState('');
-
-  // TIMER LOGIC
-  useEffect(() => {
-    let interval = null;
-    if (trackStarted && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(prev => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [trackStarted, timeLeft]);
-
-  // Format Time
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
 
   const openAttendanceModal = (date) => {
     setAttendanceModal({ isOpen: true, date });
@@ -775,7 +863,6 @@ function Dashboard({ user, onUpdate, onCertificate }) {
   };
 
   const finishTrack = () => {
-    if (timeLeft > 0) return alert("Aguarde o tempo mínimo de visualização.");
     if (!contentChecked) return alert("Confirme que você consumiu o conteúdo.");
     
     // Marcar track como concluída. Usamos um array mas como é só uma agora, basta checar length > 0
@@ -810,6 +897,9 @@ function Dashboard({ user, onUpdate, onCertificate }) {
   const currentTrackCode = user.track_code || Object.keys(TRACKS).find(k => TRACKS[k].name === user.track) || 'MA';
   const activeTrack = TRACKS[currentTrackCode];
 
+  // Estado para controle de exibição do conteúdo (botão iniciar)
+  const [showContent, setShowContent] = useState(false);
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 relative">
       <div className="bg-white rounded-xl shadow p-6 mb-8 border-l-4 border-blue-600 flex justify-between items-center">
@@ -839,9 +929,21 @@ function Dashboard({ user, onUpdate, onCertificate }) {
             </div>
           </div>
 
+          {/* CARD DE BIBLIOTECA (NOVO) */}
+          <div 
+            onClick={onOpenLibrary}
+            className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 rounded-xl shadow-lg text-white cursor-pointer transform transition hover:scale-105"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-bold text-lg flex items-center gap-2"><Library/> Biblioteca de Conteúdo</h3>
+              <ChevronRight/>
+            </div>
+            <p className="text-purple-100 text-sm">Acesse materiais das outras trilhas para consulta e aprofundamento.</p>
+          </div>
+
           {/* AVALIAÇÃO REFORMULADA */}
           <div className={`bg-white p-6 rounded-xl shadow-sm ${!hasPED ? 'opacity-50 pointer-events-none' : ''}`}>
-            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Star className="text-yellow-500"/> Avalie sua experiência no IX C.A.F.E.</h3>
+            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Star className="text-yellow-500"/> Avaliação sua experiência no IX C.A.F.E.</h3>
             {user.evaluation_submitted ? (
               <div className="text-green-600 font-bold text-center py-4 bg-green-50 rounded">Avaliação Enviada. Obrigado!</div>
             ) : (
@@ -918,20 +1020,20 @@ function Dashboard({ user, onUpdate, onCertificate }) {
                  <CheckCircle size={24} className="text-green-600 flex-shrink-0"/>
                  <div>
                     <h3 className="font-bold text-green-800">Trilha Concluída!</h3>
-                    <p className="text-xs text-green-700">Você já finalizou esta etapa, mas pode rever o conteúdo abaixo à vontade.</p>
+                    <p className="text-xs text-green-700">Você já finalizou esta etapa. O conteúdo permanece disponível para consulta.</p>
                  </div>
                </div>
             )}
 
             <div className="relative">
-              {/* TRAVA INICIAL - Mostra APENAS se não começou E se não tiver concluído */}
-              {!trackStarted && !hasContent && (
+              {/* TRAVA INICIAL - Mostra APENAS se não começou e não tem conteúdo */}
+              {!showContent && !hasContent && (
                 <div className="absolute inset-0 z-10 bg-gray-900 bg-opacity-90 flex flex-col items-center justify-center rounded-xl p-6 text-center">
                   <Brain size={48} className="text-white mb-4"/>
                   <h2 className="text-2xl font-bold text-white mb-2">{activeTrack.name}</h2>
-                  <p className="text-gray-300 mb-6 max-w-md">Para validar sua presença assíncrona (27/01), você deve consumir este conteúdo por no mínimo 5 minutos.</p>
+                  <p className="text-gray-300 mb-6 max-w-md">Para validar sua presença assíncrona (27/01), você deve consumir este conteúdo.</p>
                   <button 
-                    onClick={() => setTrackStarted(true)}
+                    onClick={() => setShowContent(true)}
                     className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full flex items-center gap-2 transition transform hover:scale-105"
                   >
                     <PlayCircle size={24}/> Iniciar Estudos
@@ -968,40 +1070,26 @@ function Dashboard({ user, onUpdate, onCertificate }) {
                   <span>Autor: {activeTrack.author}</span>
               </div>
 
-              {/* AREA DE VALIDAÇÃO (TIMER) - Mostra APENAS se começou E ainda não concluiu */}
-              {trackStarted && !hasContent && (
+              {/* AREA DE VALIDAÇÃO (SEM TIMER) - Mostra se começou E ainda não concluiu */}
+              {showContent && !hasContent && (
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4">
                   <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    
-                    {/* TIMER */}
-                    <div className="flex items-center gap-2">
-                      <Clock size={20} className={timeLeft > 0 ? "text-blue-600 animate-pulse" : "text-green-600"}/>
-                      <div>
-                        <span className="text-xs font-bold text-gray-500 uppercase block">Tempo Restante</span>
-                        <span className={`font-mono text-xl font-bold ${timeLeft > 0 ? 'text-blue-900' : 'text-green-600'}`}>
-                          {timeLeft > 0 ? "Contabilizando..." : "Concluído"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* AÇÕES */}
-                    <div className="flex flex-col gap-2 w-full md:w-auto">
-                      <label className={`flex items-center p-2 rounded cursor-pointer transition ${timeLeft > 0 ? 'opacity-50 pointer-events-none' : 'hover:bg-gray-100'}`}>
+                    <div className="flex flex-col gap-2 w-full">
+                      <label className="flex items-center p-2 rounded cursor-pointer transition hover:bg-gray-100">
                         <input 
                           type="checkbox" 
                           checked={contentChecked} 
                           onChange={(e) => setContentChecked(e.target.checked)}
-                          disabled={timeLeft > 0}
                           className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                         />
                         <span className="ml-2 text-sm font-medium text-gray-700">
-                          Declaro que assisti e compreendi o conteúdo da trilha.
+                          Declaro que assisti e compreendi o conteúdo.
                         </span>
                       </label>
                       
                       <button 
                         onClick={finishTrack}
-                        disabled={timeLeft > 0 || !contentChecked}
+                        disabled={!contentChecked}
                         className="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-300 disabled:text-gray-500 hover:bg-green-700 transition"
                       >
                         Concluir Módulo
@@ -1147,7 +1235,7 @@ function CertificateView({ user, onBack }) {
   );
 }
 
-// --- ADMIN REFORMULADO (V5 - COM FILTROS DE VERDADE E AVALIAÇÃO DETALHADA) ---
+// --- ADMIN REFORMULADO (V10.0 Gold - Restaurado & Blindado) ---
 
 function AdminPanel({ onBack, onImpersonate }) {
   const [users, setUsers] = useState([]);
@@ -1318,7 +1406,8 @@ function AdminPanel({ onBack, onImpersonate }) {
             <label className="text-xs font-bold text-gray-500 uppercase">Área</label>
             <select className="w-full border rounded-lg py-2 px-3 text-sm" value={filterColegiado} onChange={e => setFilterColegiado(e.target.value)}>
               <option value="Todos">Todas as Áreas</option>
-              {AREA_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+              {/* PROTEÇÃO CONTRA CRASH: Se AREA_OPTIONS falhar, retorna array vazio */}
+              {(AREA_OPTIONS || []).map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <button onClick={downloadCSV} className="bg-green-600 text-white py-2 px-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-green-700 h-10"><Download size={16}/> Exportar CSV</button>
